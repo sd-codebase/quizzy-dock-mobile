@@ -2,14 +2,36 @@
  * TypeScript types and interfaces for API requests and responses
  */
 
+// Subtopic/Topic Types
+export interface Subtopic {
+  id: string;
+  name: string;
+}
+
+export interface Topic {
+  name: string;
+  subtopics: Subtopic[];
+}
+
 // Subject/Course Types
 export interface Subject {
-  id: string;
+  _id?: string;
+  id?: string;
   name: string;
   description?: string;
   icon?: string;
   totalQuizzes?: number;
   difficulty?: 'beginner' | 'intermediate' | 'advanced';
+  shortName?: string;
+  questions?: string | number;
+  order?: number;
+  status?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface SubjectWithTopics extends Subject {
+  topics: Topic[];
 }
 
 // Question Types

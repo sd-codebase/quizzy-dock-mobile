@@ -1,18 +1,28 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
 import { GradientBackground } from '@/components/home/gradient-background';
 import { Logo } from '@/components/home/logo';
-import { SubjectsList } from '@/components/home/subjects-list';
-import type { Subject } from '@/types/api';
-import { useRouter } from 'expo-router';
+import { TopicsList } from '@/components/topics/topics-list';
 
-export default function SubjectsScreen() {
-  const router = useRouter();
+function TopicsScreen() {
+  const { shortname } = useLocalSearchParams<{ shortname: string }>();
 
-  const handleSubjectPress = (subject: Subject) => {
-    if (subject.shortName) {
-      router.push(`/subjects/${subject.shortName}/topics`);
-    }
-  };
+  if (!shortname) {
+    return (
+      <GradientBackground>
+        <View style={styles.wrapper}>
+          <View style={styles.stickyLogo}>
+            <Logo />
+          </View>
+          <View style={styles.errorContainer}>
+            <View style={styles.errorMessage}>
+              <p>Invalid subject</p>
+            </View>
+          </View>
+        </View>
+      </GradientBackground>
+    );
+  }
 
   return (
     <GradientBackground>
@@ -26,7 +36,7 @@ export default function SubjectsScreen() {
         >
           <View style={styles.content}>
             <View style={styles.spacer} />
-            <SubjectsList onSubjectPress={handleSubjectPress} />
+            <TopicsList shortname={shortname} />
           </View>
         </ScrollView>
       </View>
@@ -52,4 +62,16 @@ const styles = StyleSheet.create({
   spacer: {
     height: 20,
   },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+  },
+  errorMessage: {
+    fontSize: 16,
+    color: '#ef4444',
+  },
 });
+
+export default TopicsScreen;

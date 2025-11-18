@@ -12,6 +12,7 @@ import type {
   QuizzesResponse,
   QuizDetailResponse,
   SubmissionResponse,
+  SubjectWithTopics,
 } from '@/types/api';
 
 // ============================================================================
@@ -50,6 +51,17 @@ export async function fetchActiveSubjects(): Promise<Subject[]> {
   const endpoint = '/api/subjects?status=active';
   const response = await apiGet<any>(endpoint);
   return response.data || [];
+}
+
+/**
+ * Fetch subject by shortname including topics and subtopics
+ * @param shortname - The subject shortname (e.g., 'javascript')
+ * @returns Subject with topics and subtopics
+ */
+export async function fetchSubjectByShortname(shortname: string): Promise<SubjectWithTopics> {
+  const endpoint = `/api/subjects/by-shortname?shortname=${shortname}`;
+  const response = await apiGet<any>(endpoint);
+  return response.data;
 }
 
 /**
