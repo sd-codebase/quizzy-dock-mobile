@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
+import { GradientText } from '@/components/ui/gradient-text';
 
 export function HeroSection() {
   return (
@@ -7,9 +8,14 @@ export function HeroSection() {
         The Ultimate
       </Text>
       <View style={styles.gradientContainer}>
-        <Text style={styles.gradientText}>
+        <GradientText
+          colors={['#6366f1', '#a855f7', '#ec4899']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.gradientText}
+        >
           Coding Quiz Hub
-        </Text>
+        </GradientText>
       </View>
     </View>
   );
@@ -34,7 +40,5 @@ const styles = StyleSheet.create({
     fontSize: 48,
     fontWeight: 'bold',
     letterSpacing: -0.5,
-    background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%)',
-    color: '#6366f1',
   },
 });

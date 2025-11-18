@@ -1,5 +1,5 @@
-import { StyleSheet, Pressable, Text, ViewStyle } from 'react-native';
-import { GradientColors } from '@/constants/theme';
+import { StyleSheet, Pressable, Text } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface CTAButtonProps {
   onPress: () => void;
@@ -8,24 +8,27 @@ interface CTAButtonProps {
 
 export function CTAButton({ onPress, title = 'Explore Subjects & Start Quiz' }: CTAButtonProps) {
   return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.button,
-        { backgroundColor: pressed ? GradientColors.buttonHover : GradientColors.button }
-      ]}
-    >
-      <Text style={styles.buttonText}>{title}</Text>
+    <Pressable onPress={onPress} style={styles.pressable}>
+      <LinearGradient
+        colors={['#6366f1', '#a855f7']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.button}
+      >
+        <Text style={styles.buttonText}>{title}</Text>
+      </LinearGradient>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
+  pressable: {
+    marginBottom: 32,
+  },
   button: {
     borderRadius: 50,
     paddingVertical: 16,
     paddingHorizontal: 24,
-    marginBottom: 32,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#6366f1',
