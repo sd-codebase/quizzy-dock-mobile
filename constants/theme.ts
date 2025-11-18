@@ -19,12 +19,28 @@ export const Colors = {
   },
   dark: {
     text: '#ECEDEE',
-    background: '#151718',
+    background: '#0f0a2e',
     tint: tintColorDark,
     icon: '#9BA1A6',
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
   },
+};
+
+export const TabBarColors = {
+  background: '#0f0a2e',
+  activeTint: '#6366f1',
+  inactiveTint: '#6b7280',
+  labelColor: '#ffffff',
+};
+
+export const GradientColors = {
+  primary: ['#6366f1', '#a855f7'],
+  secondary: ['#a855f7', '#ec4899'],
+  button: '#6366f1',
+  buttonHover: '#4f46e5',
+  accentBlue: '#3b82f6',
+  accentPurple: '#a855f7',
 };
 
 export const Fonts = Platform.select({
