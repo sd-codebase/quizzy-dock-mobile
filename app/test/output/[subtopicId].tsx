@@ -1,6 +1,7 @@
 import { View, ScrollView, StyleSheet, ActivityIndicator, Text } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState, useEffect } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GradientBackground } from '@/components/home/gradient-background';
 import { Logo } from '@/components/home/logo';
 import { TestTitle } from '@/components/test/mcq/test-title';
@@ -18,6 +19,7 @@ import type { OutputQuestion } from '@/types/api';
 
 export default function OutputTestScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{
     subtopicId: string;
     subtopicName: string;
@@ -162,7 +164,7 @@ export default function OutputTestScreen() {
         </ScrollView>
 
         {/* Fixed Buttons */}
-        <View style={styles.buttonContainer}>
+        <View style={[styles.buttonContainer, { paddingBottom: 16 + insets.bottom }]}>
           <View style={styles.buttonRow}>
             <GoBackButton
               onPress={handleChooseNewTopic}

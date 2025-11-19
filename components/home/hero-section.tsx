@@ -32,6 +32,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
     marginBottom: 4,
     color: '#ffffff',
+    textAlign: 'center',
   },
   gradientContainer: {
     alignItems: 'center',
@@ -40,5 +41,6 @@ const styles = StyleSheet.create({
     fontSize: 48,
     fontWeight: 'bold',
     letterSpacing: -0.5,
+    textAlign: 'center',
   },
 });
