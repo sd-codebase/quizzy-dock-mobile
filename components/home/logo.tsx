@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 0,
     justifyContent: "center",
+    marginTop: 12,
   },
   icon: {
     marginRight: 4,
