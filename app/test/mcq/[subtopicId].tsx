@@ -14,6 +14,7 @@ import { GoBackButton } from '@/components/test/mcq/go-back-button';
 import { ScoreDisplay } from '@/components/test/mcq/score-display';
 import { ResultSummary } from '@/components/test/mcq/result-summary';
 import { ResultActions } from '@/components/test/mcq/result-actions';
+import { MarkdownRenderer } from '@/components/test/mcq/markdown-renderer';
 import { fetchMCQQuestions } from '@/services/quizService';
 import type { MCQQuestion } from '@/types/api';
 
@@ -284,7 +285,7 @@ export default function MCQScreen() {
             {currentQuestion.explanation && (
               <View style={styles.explanationBox}>
                 <Text style={styles.explanationLabel}>Explanation</Text>
-                <Text style={styles.explanationText}>{currentQuestion.explanation}</Text>
+                <MarkdownRenderer content={currentQuestion.explanation} />
               </View>
             )}
 

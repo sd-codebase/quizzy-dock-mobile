@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { MarkdownRenderer } from './markdown-renderer';
 
 interface QuestionTextProps {
   text: string;
@@ -6,12 +7,12 @@ interface QuestionTextProps {
 
 /**
  * QuestionText Component
- * Displays the question text in a white card
+ * Displays the question text with markdown support in a white card
  */
 export function QuestionText({ text }: QuestionTextProps) {
   return (
     <View style={styles.card}>
-      <Text style={styles.question}>{text}</Text>
+      <MarkdownRenderer content={text} />
     </View>
   );
 }
@@ -22,12 +23,5 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 20,
     marginBottom: 16,
-  },
-  question: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1f2937',
-    lineHeight: 24,
-    letterSpacing: 0.3,
   },
 });

@@ -1,4 +1,5 @@
-import { StyleSheet, Text, Pressable, View } from 'react-native';
+import { StyleSheet, Pressable, View } from 'react-native';
+import { MarkdownRenderer } from './markdown-renderer';
 
 interface OptionButtonProps {
   text: string;
@@ -12,6 +13,7 @@ interface OptionButtonProps {
 /**
  * OptionButton Component
  * Displays a single answer option with states: default, selected, correct, incorrect
+ * Supports markdown formatting
  */
 export function OptionButton({
   text,
@@ -54,16 +56,9 @@ export function OptionButton({
         pressed && !disabled && styles.buttonPressed,
       ]}
     >
-      <Text
-        style={[
-          styles.optionText,
-          {
-            color: getTextColor(),
-          },
-        ]}
-      >
-        {text}
-      </Text>
+      <View style={styles.content}>
+        <MarkdownRenderer content={text} />
+      </View>
     </Pressable>
   );
 }
@@ -77,13 +72,12 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
+    minHeight: 56,
   },
   buttonPressed: {
     opacity: 0.8,
   },
-  optionText: {
-    fontSize: 14,
-    fontWeight: '500',
-    letterSpacing: 0.3,
+  content: {
+    width: '100%',
   },
 });
