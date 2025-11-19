@@ -13,6 +13,8 @@ import type {
   QuizDetailResponse,
   SubmissionResponse,
   SubjectWithTopics,
+  MCQQuestion,
+  MCQQuestionsResponse,
 } from '@/types/api';
 
 // ============================================================================
@@ -171,6 +173,21 @@ export async function fetchUserSubmissions(
 export async function fetchSubmissionById(submissionId: string): Promise<QuizSubmission> {
   const endpoint = `/api/submissions/${submissionId}`;
   return apiGet<QuizSubmission>(endpoint);
+}
+
+// ============================================================================
+// MCQ QUESTIONS ENDPOINTS
+// ============================================================================
+
+/**
+ * Fetch MCQ questions for a specific subtopic
+ * @param subtopicId - The subtopic ID
+ * @returns List of MCQ questions
+ */
+export async function fetchMCQQuestions(subtopicId: string): Promise<MCQQuestion[]> {
+  const endpoint = `/api/questions/mcq?topicId=${subtopicId}`;
+  const response = await apiGet<MCQQuestionsResponse>(endpoint);
+  return response.data || [];
 }
 
 // ============================================================================

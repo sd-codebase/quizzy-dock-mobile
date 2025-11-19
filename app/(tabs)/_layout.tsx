@@ -19,7 +19,7 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: TabBarColors.background,
           borderTopColor: '#1a1340',
-          paddingBottom: 8,
+          borderTopWidth: 1,
         },
         tabBarLabelStyle: {
           color: TabBarColors.labelColor,
@@ -42,7 +42,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="subjects"
+        name="subjects/[shortname]/topics"
         options={{
           href: null,
           headerShown: false,

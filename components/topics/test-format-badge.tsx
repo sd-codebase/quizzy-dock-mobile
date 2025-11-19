@@ -1,17 +1,20 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, Pressable } from "react-native";
 
 interface TestFormatBadgeProps {
   type: "mcq" | "output" | "interview";
   size?: "small" | "medium";
+  onPress?: () => void;
 }
 
 /**
  * TestFormatBadge Component
  * Displays a single test format type with color coding
+ * Pressable to navigate to test screen
  */
 export function TestFormatBadge({
   type,
   size = "medium",
+  onPress,
 }: TestFormatBadgeProps) {
   const getLabel = (type: string) => {
     switch (type) {
@@ -44,11 +47,13 @@ export function TestFormatBadge({
   const isSmall = size === "small";
 
   return (
-    <View
-      style={[
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
         styles.badge,
         { backgroundColor: color },
         isSmall && styles.badgeSmall,
+        pressed && styles.badgePressed,
       ]}
     >
       <Text
@@ -57,7 +62,7 @@ export function TestFormatBadge({
       >
         {label}
       </Text>
-    </View>
+    </Pressable>
   );
 }
 
@@ -74,6 +79,9 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 10,
     borderRadius: 8,
+  },
+  badgePressed: {
+    opacity: 0.8,
   },
   badgeText: {
     color: "#ffffff",

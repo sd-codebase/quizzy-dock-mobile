@@ -7,14 +7,16 @@ import type { Topic } from '@/types/api';
 interface TopicItemProps {
   topic: Topic;
   topicIndex: number;
+  subject?: string;
 }
 
 /**
  * TopicItem Component
  * Displays a topic with all its subtopics
  * Supports expand/collapse functionality
+ * Passes topic/subject info to subtopic rows for test navigation
  */
-export function TopicItem({ topic, topicIndex }: TopicItemProps) {
+export function TopicItem({ topic, topicIndex, subject }: TopicItemProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpanded = () => {
@@ -37,6 +39,8 @@ export function TopicItem({ topic, topicIndex }: TopicItemProps) {
               topicIndex={topicIndex}
               subtopicIndex={subtopicIndex + 1}
               subtopic={subtopic}
+              topicName={topic.name}
+              subject={subject}
             />
           ))}
         </View>

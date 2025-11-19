@@ -46,6 +46,25 @@ export interface Question {
   tags?: string[];
 }
 
+// MCQ Question Type
+export interface MCQQuestion {
+  _id?: string;
+  id?: string;
+  topicId: string;
+  question: string;
+  options: string[];
+  correct_answer: number; // 0-based index
+  explanation?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface MCQQuestionsResponse {
+  success: boolean;
+  count: number;
+  data: MCQQuestion[];
+}
+
 // Quiz Types
 export interface Quiz {
   id: string;

@@ -65,7 +65,7 @@ export function TopicsList({ shortname }: TopicsListProps) {
   return (
     <FlatList
       data={[subject]}
-      renderItem={() => <TopicsContainer topics={subject.topics} />}
+      renderItem={() => <TopicsContainer topics={subject.topics} subject={subject.name} />}
       keyExtractor={() => 'topics'}
       scrollEnabled={false}
       contentContainerStyle={styles.container}

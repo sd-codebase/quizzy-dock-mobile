@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    paddingBottom: 32,
+    paddingBottom: 80,
   },
   spacer: {
     height: 20,
