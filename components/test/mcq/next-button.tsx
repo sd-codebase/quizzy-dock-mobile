@@ -5,6 +5,7 @@ interface NextButtonProps {
   onPress: () => void;
   disabled?: boolean;
   isLastQuestion?: boolean;
+  label?: string;
 }
 
 /**
@@ -15,8 +16,9 @@ export function NextButton({
   onPress,
   disabled = false,
   isLastQuestion = false,
+  label,
 }: NextButtonProps) {
-  const buttonText = isLastQuestion ? 'Submit' : 'Next';
+  const buttonText = label || (isLastQuestion ? 'Submit' : 'Next');
 
   return (
     <Pressable

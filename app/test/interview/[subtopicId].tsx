@@ -1,84 +1,247 @@
-import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { useRouter } from 'expo-router';
+import { View, ScrollView, StyleSheet, ActivityIndicator, Text } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useState, useEffect } from 'react';
 import { GradientBackground } from '@/components/home/gradient-background';
+import { Logo } from '@/components/home/logo';
+import { TestTitle } from '@/components/test/mcq/test-title';
+import { TestBadge } from '@/components/test/mcq/test-badge';
+import { ProgressCounter } from '@/components/test/mcq/progress-counter';
+import { QuestionText } from '@/components/test/mcq/question-text';
+import { GoBackButton } from '@/components/test/mcq/go-back-button';
+import { NextButton } from '@/components/test/mcq/next-button';
+import { SampleAnswerCard } from '@/components/test/interview/sample-answer-card';
+import { AdditionalNotesCard } from '@/components/test/interview/additional-notes-card';
+import { InterviewResults } from '@/components/test/interview/interview-results';
+import { fetchInterviewQuestions } from '@/services/quizService';
+import type { InterviewQuestion } from '@/types/api';
 
-export default function InterviewScreen() {
+export default function InterviewTestScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{
+    subtopicId: string;
+    subtopicName: string;
+    topicName: string;
+    subject: string;
+  }>();
+
+  // State management
+  const [questions, setQuestions] = useState<InterviewQuestion[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [showResult, setShowResult] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Load questions on mount
+  useEffect(() => {
+    loadQuestions();
+  }, []);
+
+  const loadQuestions = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      if (!params.subtopicId) {
+        throw new Error('Subtopic ID is required');
+      }
+      const data = await fetchInterviewQuestions(params.subtopicId);
+      if (data.length === 0) {
+        throw new Error('No questions found for this subtopic');
+      }
+      setQuestions(data);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load questions';
+      setError(errorMessage);
+      console.error('Error loading interview questions:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleShowAnswer = () => {
+    setShowExplanation(true);
+  };
+
+  const handleNext = () => {
+    if (currentIndex < questions.length - 1) {
+      // Move to next question
+      setCurrentIndex(currentIndex + 1);
+      setShowExplanation(false);
+    } else {
+      // Test complete
+      setShowResult(true);
+    }
+  };
+
+  const handleRestart = () => {
+    setCurrentIndex(0);
+    setShowExplanation(false);
+    setShowResult(false);
+  };
+
+  const handleChooseNewTopic = () => {
+    router.back();
+  };
+
+  if (loading) {
+    return (
+      <GradientBackground>
+        <View style={styles.centerContainer}>
+          <ActivityIndicator size="large" color="#6366f1" />
+          <Text style={styles.loadingText}>Loading Interview Questions...</Text>
+        </View>
+      </GradientBackground>
+    );
+  }
+
+  if (error) {
+    return (
+      <GradientBackground>
+        <View style={styles.centerContainer}>
+          <Text style={styles.errorText}>Error: {error}</Text>
+          <Text style={styles.errorSubtext}>Unable to load questions</Text>
+        </View>
+      </GradientBackground>
+    );
+  }
+
+  if (showResult) {
+    return (
+      <GradientBackground>
+        <InterviewResults
+          total={questions.length}
+          onRestart={handleRestart}
+          onChooseNewTopic={handleChooseNewTopic}
+        />
+      </GradientBackground>
+    );
+  }
+
+  // Testing state
+  const currentQuestion = questions[currentIndex];
 
   return (
     <GradientBackground>
-      <View style={styles.container}>
-        <View style={styles.content}>
-          <Text style={styles.title}>Interview Test</Text>
-          <Text style={styles.message}>Coming Soon</Text>
-          <Text style={styles.subtitle}>
-            Interview preparation tests will be available soon.
-          </Text>
+      <View style={styles.mainContainer}>
+        {/* Sticky Logo */}
+        <View style={styles.logoContainer}>
+          <Logo />
         </View>
 
-        <Pressable
-          onPress={() => router.back()}
-          style={({ pressed }) => [
-            styles.button,
-            pressed && styles.buttonPressed,
-          ]}
-        >
-          <Text style={styles.buttonText}>Go Back</Text>
-        </Pressable>
+        {/* Scrollable Content */}
+        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+          <View style={styles.content}>
+            {/* Header */}
+            <View style={styles.headerContainer}>
+              <View>
+                <TestTitle
+                  topicName={params.topicName || 'Topic'}
+                  subtopicName={params.subtopicName || 'Subtopic'}
+                />
+              </View>
+              <View style={styles.badgesRow}>
+                <TestBadge testType="interview" />
+                <ProgressCounter current={currentIndex + 1} total={questions.length} />
+              </View>
+            </View>
+
+            {/* Question */}
+            <QuestionText text={currentQuestion.question} />
+
+            {/* Sample Answer and Additional Notes (shown after Show Answer) */}
+            {showExplanation && (
+              <>
+                <SampleAnswerCard answer={currentQuestion.answer} />
+                {currentQuestion.explanation && (
+                  <AdditionalNotesCard notes={currentQuestion.explanation} />
+                )}
+              </>
+            )}
+          </View>
+        </ScrollView>
+
+        {/* Fixed Buttons */}
+        <View style={styles.buttonContainer}>
+          <View style={styles.buttonRow}>
+            <GoBackButton
+              onPress={handleChooseNewTopic}
+            />
+            <NextButton
+              onPress={showExplanation ? handleNext : handleShowAnswer}
+              disabled={false}
+              isLastQuestion={showExplanation && currentIndex === questions.length - 1}
+              label={showExplanation ? (currentIndex === questions.length - 1 ? 'Finish' : 'Next') : 'Show Answer'}
+            />
+          </View>
+        </View>
       </View>
     </GradientBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    flexDirection: 'column',
+  },
+  logoContainer: {
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    marginBottom: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    borderBottomWidth: 1,
+    borderBottomColor: '#2a2d45',
+  },
   container: {
     flex: 1,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 48,
   },
   content: {
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    paddingBottom: 32,
+  },
+  headerContainer: {
+    flexDirection: 'column',
+    marginBottom: 16,
+    gap: 12,
+  },
+  badgesRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  centerContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#ffffff',
-    marginBottom: 16,
-    letterSpacing: 0.3,
+  loadingText: {
+    marginTop: 12,
+    fontSize: 16,
+    color: '#9ca3af',
   },
-  message: {
-    fontSize: 24,
+  errorText: {
+    fontSize: 16,
+    color: '#ef4444',
+    textAlign: 'center',
+    marginBottom: 8,
     fontWeight: '600',
-    color: '#6366f1',
-    marginBottom: 12,
-    letterSpacing: 0.3,
   },
-  subtitle: {
+  errorSubtext: {
     fontSize: 14,
     color: '#9ca3af',
     textAlign: 'center',
-    maxWidth: 300,
-    lineHeight: 20,
-    letterSpacing: 0.2,
   },
-  button: {
-    backgroundColor: '#6366f1',
-    borderRadius: 10,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    marginTop: 24,
+  buttonContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    paddingBottom: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#2a2d45',
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
   },
-  buttonPressed: {
-    opacity: 0.8,
-  },
-  buttonText: {
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '600',
-    letterSpacing: 0.3,
+  buttonRow: {
+    flexDirection: 'row',
+    gap: 12,
   },
 });

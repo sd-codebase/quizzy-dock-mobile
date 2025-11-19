@@ -15,6 +15,10 @@ import type {
   SubjectWithTopics,
   MCQQuestion,
   MCQQuestionsResponse,
+  OutputQuestion,
+  OutputQuestionsResponse,
+  InterviewQuestion,
+  InterviewQuestionsResponse,
 } from '@/types/api';
 
 // ============================================================================
@@ -204,13 +208,25 @@ export async function fetchTestFormats(): Promise<any> {
 }
 
 /**
- * Fetch output/code-based questions
- * @param limit - Number of questions to fetch
- * @returns List of output-based questions
+ * Fetch output/code-based questions for a specific subtopic
+ * @param subtopicId - The subtopic ID
+ * @returns List of output questions
  */
-export async function fetchOutputQuestions(limit: number = 10): Promise<Quiz[]> {
-  const endpoint = `/api/quizzes/type/output?limit=${limit}`;
-  return apiGet<Quiz[]>(endpoint);
+export async function fetchOutputQuestions(subtopicId: string): Promise<OutputQuestion[]> {
+  const endpoint = `/api/questions/output?topicId=${subtopicId}`;
+  const response = await apiGet<OutputQuestionsResponse>(endpoint);
+  return response.data || [];
+}
+
+/**
+ * Fetch interview questions for a specific subtopic
+ * @param subtopicId - The subtopic ID
+ * @returns List of interview questions
+ */
+export async function fetchInterviewQuestions(subtopicId: string): Promise<InterviewQuestion[]> {
+  const endpoint = `/api/questions/interview?topicId=${subtopicId}`;
+  const response = await apiGet<InterviewQuestionsResponse>(endpoint);
+  return response.data || [];
 }
 
 /**

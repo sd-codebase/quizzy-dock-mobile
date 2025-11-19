@@ -65,6 +65,42 @@ export interface MCQQuestionsResponse {
   data: MCQQuestion[];
 }
 
+// Output Question Type
+export interface OutputQuestion {
+  _id?: string;
+  id?: string;
+  topicId: string;
+  question: string;
+  output: string; // Expected output
+  explanation?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface OutputQuestionsResponse {
+  success: boolean;
+  count: number;
+  data: OutputQuestion[];
+}
+
+// Interview Question Type
+export interface InterviewQuestion {
+  _id?: string;
+  id?: string;
+  topicId: string;
+  question: string; // Question text (markdown)
+  answer: string; // Sample answer (markdown)
+  explanation?: string; // Additional notes (markdown)
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface InterviewQuestionsResponse {
+  success: boolean;
+  count: number;
+  data: InterviewQuestion[];
+}
+
 // Quiz Types
 export interface Quiz {
   id: string;
