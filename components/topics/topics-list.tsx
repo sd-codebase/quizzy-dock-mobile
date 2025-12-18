@@ -6,13 +6,21 @@ import type { SubjectWithTopics } from '@/types/api';
 
 interface TopicsListProps {
   shortname: string;
+  subjectStatus?: string;
+  subjectName?: string;
+  subjectQuestions?: string;
 }
 
 /**
  * TopicsList Component
  * Fetches topics by shortname and displays them
  */
-export function TopicsList({ shortname }: TopicsListProps) {
+export function TopicsList({
+  shortname,
+  subjectStatus,
+  subjectName,
+  subjectQuestions,
+}: TopicsListProps) {
   const [subject, setSubject] = useState<SubjectWithTopics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -65,7 +73,15 @@ export function TopicsList({ shortname }: TopicsListProps) {
   return (
     <FlatList
       data={[subject]}
-      renderItem={() => <TopicsContainer topics={subject.topics} subject={subject.name} />}
+      renderItem={() => (
+        <TopicsContainer
+          topics={subject.topics}
+          subject={subject.name}
+          subjectStatus={subjectStatus}
+          subjectName={subjectName}
+          subjectQuestions={subjectQuestions}
+        />
+      )}
       keyExtractor={() => 'topics'}
       scrollEnabled={false}
       contentContainerStyle={styles.container}

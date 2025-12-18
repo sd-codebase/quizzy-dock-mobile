@@ -8,6 +8,9 @@ interface TopicItemProps {
   topic: Topic;
   topicIndex: number;
   subject?: string;
+  subjectStatus?: string;
+  subjectName?: string;
+  subjectQuestions?: string;
 }
 
 /**
@@ -16,7 +19,14 @@ interface TopicItemProps {
  * Supports expand/collapse functionality
  * Passes topic/subject info to subtopic rows for test navigation
  */
-export function TopicItem({ topic, topicIndex, subject }: TopicItemProps) {
+export function TopicItem({
+  topic,
+  topicIndex,
+  subject,
+  subjectStatus,
+  subjectName,
+  subjectQuestions,
+}: TopicItemProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpanded = () => {
@@ -41,6 +51,9 @@ export function TopicItem({ topic, topicIndex, subject }: TopicItemProps) {
               subtopic={subtopic}
               topicName={topic.name}
               subject={subject}
+              isSubjectActive={subjectStatus === 'active'}
+              subjectName={subjectName}
+              subjectQuestions={subjectQuestions}
             />
           ))}
         </View>

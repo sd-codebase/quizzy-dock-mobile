@@ -5,7 +5,12 @@ import { Logo } from '@/components/home/logo';
 import { TopicsList } from '@/components/topics/topics-list';
 
 function TopicsScreen() {
-  const { shortname } = useLocalSearchParams<{ shortname: string }>();
+  const { shortname, subjectStatus, subjectName, subjectQuestions } = useLocalSearchParams<{
+    shortname: string;
+    subjectStatus?: string;
+    subjectName?: string;
+    subjectQuestions?: string;
+  }>();
 
   if (!shortname) {
     return (
@@ -36,7 +41,12 @@ function TopicsScreen() {
         >
           <View style={styles.content}>
             <View style={styles.spacer} />
-            <TopicsList shortname={shortname} />
+            <TopicsList
+              shortname={shortname}
+              subjectStatus={subjectStatus}
+              subjectName={subjectName}
+              subjectQuestions={subjectQuestions}
+            />
           </View>
         </ScrollView>
       </View>

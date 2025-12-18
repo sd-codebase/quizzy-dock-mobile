@@ -1,7 +1,8 @@
 import { StyleSheet, View, Text, FlatList, ActivityIndicator } from 'react-native';
 import { useEffect, useState } from 'react';
 import { SubjectCard } from './subject-card';
-import { fetchActiveSubjects } from '@/services/quizService';
+import { fetchAllSubjects } from '@/services/quizService';
+import { ComingSoonModal } from '@/components/ui/coming-soon-modal';
 import type { Subject } from '@/types/api';
 
 interface SubjectsListProps {
@@ -17,6 +18,8 @@ export function SubjectsList({ onSubjectPress }: SubjectsListProps) {
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
 
   useEffect(() => {
     loadSubjects();
@@ -26,7 +29,7 @@ export function SubjectsList({ onSubjectPress }: SubjectsListProps) {
     try {
       setLoading(true);
       setError(null);
-      const data = await fetchActiveSubjects();
+      const data = await fetchAllSubjects();
       // Sort by order field if available
       const sorted = data.sort((a, b) => (a.order || 0) - (b.order || 0));
       setSubjects(sorted);
@@ -39,13 +42,40 @@ export function SubjectsList({ onSubjectPress }: SubjectsListProps) {
     }
   };
 
-  const renderSubjectCard = ({ item }: { item: Subject }) => (
-    <SubjectCard
-      name={item.name}
-      questions={item.questions}
-      onPress={() => onSubjectPress?.(item)}
-    />
-  );
+  const handleSubjectCardPress = (subject: Subject) => {
+    if (subject.status !== 'active') {
+      setSelectedSubject(subject);
+      setModalVisible(true);
+    } else {
+      onSubjectPress?.(subject);
+    }
+  };
+
+  const handleModalClose = () => {
+    setModalVisible(false);
+    setSelectedSubject(null);
+  };
+
+  const handleModalContinue = () => {
+    setModalVisible(false);
+    if (selectedSubject) {
+      onSubjectPress?.(selectedSubject);
+    }
+    setSelectedSubject(null);
+  };
+
+  const renderSubjectCard = ({ item }: { item: Subject }) => {
+    const isActive = item.status === 'active';
+
+    return (
+      <SubjectCard
+        name={item.name}
+        questions={item.questions}
+        isActive={isActive}
+        onPress={() => handleSubjectCardPress(item)}
+      />
+    );
+  };
 
   const renderEmpty = () => (
     <View style={styles.centerContainer}>
@@ -74,15 +104,27 @@ export function SubjectsList({ onSubjectPress }: SubjectsListProps) {
   }
 
   return (
-    <FlatList
-      data={subjects}
-      renderItem={renderSubjectCard}
-      keyExtractor={(item) => item._id}
-      contentContainerStyle={styles.container}
-      scrollEnabled={false}
-      removeClippedSubviews={true}
-      ListEmptyComponent={renderEmpty}
-    />
+    <>
+      <FlatList
+        data={subjects}
+        renderItem={renderSubjectCard}
+        keyExtractor={(item) => item._id}
+        contentContainerStyle={styles.container}
+        scrollEnabled={false}
+        removeClippedSubviews={true}
+        ListEmptyComponent={renderEmpty}
+      />
+      {selectedSubject && (
+        <ComingSoonModal
+          visible={modalVisible}
+          onClose={handleModalClose}
+          onContinue={handleModalContinue}
+          questionCount={selectedSubject.questions || 0}
+          subjectName={selectedSubject.name}
+          showContinueButton={true}
+        />
+      )}
+    </>
   );
 }
 

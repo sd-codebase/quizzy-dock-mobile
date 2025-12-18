@@ -3,23 +3,22 @@
  * Centralized module for all quiz data fetching and submissions
  */
 
-import { apiGet, apiPost, apiPut, apiDelete } from './api';
 import type {
-  Subject,
-  Quiz,
-  QuizSubmission,
-  SubjectsResponse,
-  QuizzesResponse,
-  QuizDetailResponse,
-  SubmissionResponse,
-  SubjectWithTopics,
+  InterviewQuestion,
+  InterviewQuestionsResponse,
   MCQQuestion,
   MCQQuestionsResponse,
   OutputQuestion,
   OutputQuestionsResponse,
-  InterviewQuestion,
-  InterviewQuestionsResponse,
-} from '@/types/api';
+  Quiz,
+  QuizSubmission,
+  QuizzesResponse,
+  Subject,
+  SubjectsResponse,
+  SubjectWithTopics,
+  SubmissionResponse,
+} from "@/types/api";
+import { apiGet, apiPost } from "./api";
 
 // ============================================================================
 // SUBJECTS ENDPOINTS
@@ -50,11 +49,22 @@ export async function fetchSubjectById(subjectId: string): Promise<Subject> {
 }
 
 /**
+ * Fetch all subjects (including inactive ones)
+ * @returns List of all subjects
+ */
+export async function fetchAllSubjects(): Promise<Subject[]> {
+  const endpoint = "/api/subjects";
+  const response = await apiGet<any>(endpoint);
+  return response.data || [];
+}
+
+/**
  * Fetch active subjects only
  * @returns List of active subjects
+ * @deprecated Use fetchAllSubjects() and filter client-side if needed
  */
 export async function fetchActiveSubjects(): Promise<Subject[]> {
-  const endpoint = '/api/subjects?status=active';
+  const endpoint = "/api/subjects";
   const response = await apiGet<any>(endpoint);
   return response.data || [];
 }
@@ -64,7 +74,9 @@ export async function fetchActiveSubjects(): Promise<Subject[]> {
  * @param shortname - The subject shortname (e.g., 'javascript')
  * @returns Subject with topics and subtopics
  */
-export async function fetchSubjectByShortname(shortname: string): Promise<SubjectWithTopics> {
+export async function fetchSubjectByShortname(
+  shortname: string
+): Promise<SubjectWithTopics> {
   const endpoint = `/api/subjects/by-shortname?shortname=${shortname}`;
   const response = await apiGet<any>(endpoint);
   return response.data;
@@ -119,7 +131,7 @@ export async function fetchQuizById(quizId: string): Promise<Quiz> {
  * @returns List of quizzes matching difficulty
  */
 export async function fetchQuizzesByDifficulty(
-  difficulty: 'beginner' | 'intermediate' | 'advanced'
+  difficulty: "beginner" | "intermediate" | "advanced"
 ): Promise<QuizzesResponse> {
   const endpoint = `/api/quizzes/difficulty/${difficulty}`;
   return apiGet<QuizzesResponse>(endpoint);
@@ -143,7 +155,7 @@ export async function submitQuiz(
   answers: Record<string, string | string[]>,
   timeTaken?: number
 ): Promise<QuizSubmission> {
-  const endpoint = '/api/submissions';
+  const endpoint = "/api/submissions";
   const payload = {
     quizId,
     userId,
@@ -174,7 +186,9 @@ export async function fetchUserSubmissions(
  * @param submissionId - The submission ID
  * @returns Submission details
  */
-export async function fetchSubmissionById(submissionId: string): Promise<QuizSubmission> {
+export async function fetchSubmissionById(
+  submissionId: string
+): Promise<QuizSubmission> {
   const endpoint = `/api/submissions/${submissionId}`;
   return apiGet<QuizSubmission>(endpoint);
 }
@@ -188,7 +202,9 @@ export async function fetchSubmissionById(submissionId: string): Promise<QuizSub
  * @param subtopicId - The subtopic ID
  * @returns List of MCQ questions
  */
-export async function fetchMCQQuestions(subtopicId: string): Promise<MCQQuestion[]> {
+export async function fetchMCQQuestions(
+  subtopicId: string
+): Promise<MCQQuestion[]> {
   const endpoint = `/api/questions/mcq?topicId=${subtopicId}`;
   const response = await apiGet<MCQQuestionsResponse>(endpoint);
   return response.data || [];
@@ -203,7 +219,7 @@ export async function fetchMCQQuestions(subtopicId: string): Promise<MCQQuestion
  * @returns Available test formats
  */
 export async function fetchTestFormats(): Promise<any> {
-  const endpoint = '/api/test-formats';
+  const endpoint = "/api/test-formats";
   return apiGet<any>(endpoint);
 }
 
@@ -212,7 +228,9 @@ export async function fetchTestFormats(): Promise<any> {
  * @param subtopicId - The subtopic ID
  * @returns List of output questions
  */
-export async function fetchOutputQuestions(subtopicId: string): Promise<OutputQuestion[]> {
+export async function fetchOutputQuestions(
+  subtopicId: string
+): Promise<OutputQuestion[]> {
   const endpoint = `/api/questions/output?topicId=${subtopicId}`;
   const response = await apiGet<OutputQuestionsResponse>(endpoint);
   return response.data || [];
@@ -223,7 +241,9 @@ export async function fetchOutputQuestions(subtopicId: string): Promise<OutputQu
  * @param subtopicId - The subtopic ID
  * @returns List of interview questions
  */
-export async function fetchInterviewQuestions(subtopicId: string): Promise<InterviewQuestion[]> {
+export async function fetchInterviewQuestions(
+  subtopicId: string
+): Promise<InterviewQuestion[]> {
   const endpoint = `/api/questions/interview?topicId=${subtopicId}`;
   const response = await apiGet<InterviewQuestionsResponse>(endpoint);
   return response.data || [];
@@ -234,7 +254,9 @@ export async function fetchInterviewQuestions(subtopicId: string): Promise<Inter
  * @param page - Page number
  * @returns Interview prep quizzes
  */
-export async function fetchInterviewQuizzes(page: number = 1): Promise<QuizzesResponse> {
+export async function fetchInterviewQuizzes(
+  page: number = 1
+): Promise<QuizzesResponse> {
   const endpoint = `/api/quizzes/type/interview?page=${page}`;
   return apiGet<QuizzesResponse>(endpoint);
 }
@@ -260,12 +282,12 @@ export function calculatePercentage(score: number, totalScore: number): number {
  * @returns Color string for UI
  */
 export function getDifficultyColor(
-  difficulty: 'beginner' | 'intermediate' | 'advanced'
+  difficulty: "beginner" | "intermediate" | "advanced"
 ): string {
   const colors = {
-    beginner: '#10b981',
-    intermediate: '#f59e0b',
-    advanced: '#ef4444',
+    beginner: "#10b981",
+    intermediate: "#f59e0b",
+    advanced: "#ef4444",
   };
-  return colors[difficulty] || '#6b7280';
+  return colors[difficulty] || "#6b7280";
 }

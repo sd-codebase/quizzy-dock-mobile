@@ -6,6 +6,7 @@ interface SubjectCardProps {
   name: string;
   questions: string | number;
   onPress: () => void;
+  isActive?: boolean;
 }
 
 /**
@@ -13,7 +14,7 @@ interface SubjectCardProps {
  * Displays a single subject with icon and question count
  * Memoized to prevent unnecessary re-renders
  */
-const SubjectCardComponent = ({ name, questions, onPress }: SubjectCardProps) => {
+const SubjectCardComponent = ({ name, questions, onPress, isActive = true }: SubjectCardProps) => {
   const questionCount = typeof questions === 'string' ? questions : questions.toString();
 
   return (
@@ -21,6 +22,7 @@ const SubjectCardComponent = ({ name, questions, onPress }: SubjectCardProps) =>
       onPress={onPress}
       style={({ pressed }) => [
         styles.card,
+        !isActive && styles.cardInactive,
         pressed && styles.cardPressed,
       ]}
     >
@@ -55,6 +57,9 @@ const styles = StyleSheet.create({
   },
   cardPressed: {
     opacity: 0.8,
+  },
+  cardInactive: {
+    opacity: 0.5,
   },
   content: {
     flexDirection: 'row',

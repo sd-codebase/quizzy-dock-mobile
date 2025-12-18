@@ -10,7 +10,14 @@ export default function SubjectsScreen() {
 
   const handleSubjectPress = (subject: Subject) => {
     if (subject.shortName) {
-      router.push(`/subjects/${subject.shortName}/topics`);
+      router.push({
+        pathname: `/subjects/${subject.shortName}/topics`,
+        params: {
+          subjectStatus: subject.status || 'active',
+          subjectName: subject.name,
+          subjectQuestions: subject.questions || 0,
+        },
+      });
     }
   };
 

@@ -1,8 +1,10 @@
 import { StyleSheet, View } from 'react-native';
+import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { SubtopicNumber } from './subtopic-number';
 import { SubtopicName } from './subtopic-name';
 import { TestFormatBadgesRow } from './test-format-badges-row';
+import { ComingSoonModal } from '@/components/ui/coming-soon-modal';
 import type { Subtopic } from '@/types/api';
 
 interface SubtopicRowProps {
@@ -11,6 +13,9 @@ interface SubtopicRowProps {
   subtopic: Subtopic;
   topicName?: string;
   subject?: string;
+  isSubjectActive?: boolean;
+  subjectName?: string;
+  subjectQuestions?: string;
 }
 
 /**
@@ -24,10 +29,18 @@ export function SubtopicRow({
   subtopic,
   topicName = '',
   subject = '',
+  isSubjectActive = true,
+  subjectName = '',
+  subjectQuestions = '0',
 }: SubtopicRowProps) {
   const router = useRouter();
+  const [modalVisible, setModalVisible] = useState(false);
 
   const handleMCQPress = () => {
+    if (!isSubjectActive) {
+      setModalVisible(true);
+      return;
+    }
     router.push({
       pathname: '/test/mcq/[subtopicId]',
       params: {
@@ -40,6 +53,10 @@ export function SubtopicRow({
   };
 
   const handleOutputPress = () => {
+    if (!isSubjectActive) {
+      setModalVisible(true);
+      return;
+    }
     router.push({
       pathname: '/test/output/[subtopicId]',
       params: {
@@ -52,6 +69,10 @@ export function SubtopicRow({
   };
 
   const handleInterviewPress = () => {
+    if (!isSubjectActive) {
+      setModalVisible(true);
+      return;
+    }
     router.push({
       pathname: '/test/interview/[subtopicId]',
       params: {
@@ -63,21 +84,34 @@ export function SubtopicRow({
     });
   };
 
+  const handleModalClose = () => {
+    setModalVisible(false);
+  };
+
   return (
-    <View style={styles.container}>
-      <View style={styles.headerRow}>
-        <SubtopicNumber topicIndex={topicIndex} subtopicIndex={subtopicIndex} />
-        <SubtopicName name={subtopic.name} />
+    <>
+      <View style={styles.container}>
+        <View style={styles.headerRow}>
+          <SubtopicNumber topicIndex={topicIndex} subtopicIndex={subtopicIndex} />
+          <SubtopicName name={subtopic.name} />
+        </View>
+        <View style={styles.badgesContainer}>
+          <TestFormatBadgesRow
+            size="small"
+            onMCQPress={handleMCQPress}
+            onOutputPress={handleOutputPress}
+            onInterviewPress={handleInterviewPress}
+          />
+        </View>
       </View>
-      <View style={styles.badgesContainer}>
-        <TestFormatBadgesRow
-          size="small"
-          onMCQPress={handleMCQPress}
-          onOutputPress={handleOutputPress}
-          onInterviewPress={handleInterviewPress}
-        />
-      </View>
-    </View>
+      <ComingSoonModal
+        visible={modalVisible}
+        onClose={handleModalClose}
+        questionCount={subjectQuestions}
+        subjectName={subjectName}
+        showContinueButton={false}
+      />
+    </>
   );
 }
 

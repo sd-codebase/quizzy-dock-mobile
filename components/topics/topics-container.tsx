@@ -5,6 +5,9 @@ import type { Topic } from '@/types/api';
 interface TopicsContainerProps {
   topics: Topic[];
   subject?: string;
+  subjectStatus?: string;
+  subjectName?: string;
+  subjectQuestions?: string;
 }
 
 /**
@@ -12,7 +15,13 @@ interface TopicsContainerProps {
  * Maps topics to TopicItem components with proper indexing
  * Passes subject info for test navigation
  */
-export function TopicsContainer({ topics, subject }: TopicsContainerProps) {
+export function TopicsContainer({
+  topics,
+  subject,
+  subjectStatus,
+  subjectName,
+  subjectQuestions,
+}: TopicsContainerProps) {
   return (
     <View style={styles.container}>
       {topics.map((topic, topicIndex) => (
@@ -21,6 +30,9 @@ export function TopicsContainer({ topics, subject }: TopicsContainerProps) {
           topic={topic}
           topicIndex={topicIndex + 1}
           subject={subject}
+          subjectStatus={subjectStatus}
+          subjectName={subjectName}
+          subjectQuestions={subjectQuestions}
         />
       ))}
     </View>
