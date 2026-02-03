@@ -1,5 +1,6 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GradientBackground } from '@/components/home/gradient-background';
 import { Logo } from '@/components/home/logo';
 import { HeaderBadge } from '@/components/home/header-badge';
@@ -11,6 +12,7 @@ import { BannerAd } from '@/components/ads/banner-ad';
 
 export default function HomeScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const handleCTAPress = () => {
     router.push('/(tabs)/explore');
@@ -19,7 +21,7 @@ export default function HomeScreen() {
   return (
     <GradientBackground>
       <View style={styles.wrapper}>
-        <View style={styles.stickyLogo}>
+        <View style={[styles.stickyLogo, { paddingTop: insets.top }]}>
           <Logo />
         </View>
         <ScrollView

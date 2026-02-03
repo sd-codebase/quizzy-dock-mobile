@@ -1,6 +1,8 @@
 import { View, ScrollView, StyleSheet, Text, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Logo } from '@/components/home/logo';
+import { BannerAd } from '@/components/ads/banner-ad';
 
 interface OutputResultsProps {
   total: number;
@@ -18,11 +20,12 @@ export function OutputResults({
   onRestart,
   onChooseNewTopic,
 }: OutputResultsProps) {
+  const insets = useSafeAreaInsets();
 
   return (
     <View style={styles.mainContainer}>
       {/* Sticky Logo */}
-      <View style={styles.logoContainer}>
+      <View style={[styles.logoContainer, { paddingTop: insets.top }]}>
         <Logo />
       </View>
 
@@ -77,6 +80,7 @@ export function OutputResults({
           </View>
         </View>
       </ScrollView>
+      <BannerAd />
     </View>
   );
 }
@@ -100,7 +104,7 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 16,
     paddingVertical: 16,
-    paddingBottom: 32,
+    paddingBottom: 80,
   },
   resultTitle: {
     fontSize: 32,

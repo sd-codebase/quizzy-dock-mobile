@@ -13,6 +13,7 @@ import { NextButton } from '@/components/test/mcq/next-button';
 import { SampleAnswerCard } from '@/components/test/interview/sample-answer-card';
 import { AdditionalNotesCard } from '@/components/test/interview/additional-notes-card';
 import { InterviewResults } from '@/components/test/interview/interview-results';
+import { BannerAd } from '@/components/ads/banner-ad';
 import { fetchInterviewQuestions } from '@/services/quizService';
 import { useInterstitialAd } from '@/hooks/use-interstitial-ad';
 import type { InterviewQuestion } from '@/types/api';
@@ -165,7 +166,7 @@ export default function InterviewTestScreen() {
     <GradientBackground>
       <View style={styles.mainContainer}>
         {/* Sticky Logo */}
-        <View style={styles.logoContainer}>
+        <View style={[styles.logoContainer, { paddingTop: insets.top }]}>
           <Logo />
         </View>
 
@@ -200,6 +201,9 @@ export default function InterviewTestScreen() {
             )}
           </View>
         </ScrollView>
+
+        {/* Banner Ad */}
+        <BannerAd />
 
         {/* Fixed Buttons */}
         <View style={[styles.buttonContainer, { paddingBottom: 16 + insets.bottom }]}>

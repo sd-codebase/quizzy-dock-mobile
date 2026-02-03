@@ -14,6 +14,7 @@ import { NextButton } from '@/components/test/mcq/next-button';
 import { ExpectedOutputCard } from '@/components/test/output/expected-output-card';
 import { ExplanationCard } from '@/components/test/output/explanation-card';
 import { OutputResults } from '@/components/test/output/output-results';
+import { BannerAd } from '@/components/ads/banner-ad';
 import { fetchOutputQuestions } from '@/services/quizService';
 import { useInterstitialAd } from '@/hooks/use-interstitial-ad';
 import type { OutputQuestion } from '@/types/api';
@@ -166,7 +167,7 @@ export default function OutputTestScreen() {
     <GradientBackground>
       <View style={styles.mainContainer}>
         {/* Sticky Logo */}
-        <View style={styles.logoContainer}>
+        <View style={[styles.logoContainer, { paddingTop: insets.top }]}>
           <Logo />
         </View>
 
@@ -201,6 +202,9 @@ export default function OutputTestScreen() {
             )}
           </View>
         </ScrollView>
+
+        {/* Banner Ad */}
+        <BannerAd />
 
         {/* Fixed Buttons */}
         <View style={[styles.buttonContainer, { paddingBottom: 16 + insets.bottom }]}>

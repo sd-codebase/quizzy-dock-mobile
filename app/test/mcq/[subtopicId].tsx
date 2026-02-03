@@ -16,6 +16,7 @@ import { ScoreDisplay } from '@/components/test/mcq/score-display';
 import { ResultSummary } from '@/components/test/mcq/result-summary';
 import { ResultActions } from '@/components/test/mcq/result-actions';
 import { MarkdownRenderer } from '@/components/test/mcq/markdown-renderer';
+import { BannerAd } from '@/components/ads/banner-ad';
 import { fetchMCQQuestions } from '@/services/quizService';
 import { useInterstitialAd } from '@/hooks/use-interstitial-ad';
 import type { MCQQuestion } from '@/types/api';
@@ -269,13 +270,13 @@ export default function MCQScreen() {
       <GradientBackground>
         <View style={styles.mainContainer}>
           {/* Sticky Logo */}
-          <View style={styles.logoContainer}>
+          <View style={[styles.logoContainer, { paddingTop: insets.top }]}>
             <Logo />
           </View>
 
           {/* Scrollable Content */}
           <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-            <View style={styles.content}>
+            <View style={styles.contentWithBanner}>
               <Text style={styles.resultTitle}>Test Complete</Text>
               <ScoreDisplay score={correctCount} total={questions.length} />
               <ResultSummary
@@ -290,6 +291,7 @@ export default function MCQScreen() {
               />
             </View>
           </ScrollView>
+          <BannerAd />
         </View>
       </GradientBackground>
     );
@@ -303,7 +305,7 @@ export default function MCQScreen() {
       <GradientBackground>
         <View style={styles.mainContainer}>
           {/* Sticky Logo */}
-          <View style={styles.logoContainer}>
+          <View style={[styles.logoContainer, { paddingTop: insets.top }]}>
             <Logo />
           </View>
 
@@ -343,6 +345,9 @@ export default function MCQScreen() {
 
             </View>
           </ScrollView>
+
+          {/* Banner Ad */}
+          <BannerAd />
 
           {/* Fixed Navigation Buttons */}
           <View style={[styles.buttonContainer, { paddingBottom: 16 + insets.bottom }]}>
@@ -385,7 +390,7 @@ export default function MCQScreen() {
     <GradientBackground>
       <View style={styles.mainContainer}>
         {/* Sticky Logo */}
-        <View style={styles.logoContainer}>
+        <View style={[styles.logoContainer, { paddingTop: insets.top }]}>
           <Logo />
         </View>
 
@@ -428,6 +433,9 @@ export default function MCQScreen() {
           </View>
         </ScrollView>
 
+        {/* Banner Ad */}
+        <BannerAd />
+
         {/* Fixed Buttons */}
         <View style={[styles.buttonContainer, { paddingBottom: 16 + insets.bottom }]}>
           <View style={styles.buttonRow}>
@@ -466,6 +474,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 16,
     paddingBottom: 16,
+  },
+  contentWithBanner: {
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    paddingBottom: 80,
   },
   buttonContainer: {
     paddingHorizontal: 16,

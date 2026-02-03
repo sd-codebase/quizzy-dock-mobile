@@ -1,11 +1,13 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GradientBackground } from '@/components/home/gradient-background';
 import { Logo } from '@/components/home/logo';
 import { TopicsList } from '@/components/topics/topics-list';
 import { BannerAd } from '@/components/ads/banner-ad';
 
 function TopicsScreen() {
+  const insets = useSafeAreaInsets();
   const { shortname, subjectStatus, subjectName, subjectQuestions } = useLocalSearchParams<{
     shortname: string;
     subjectStatus?: string;
@@ -17,7 +19,7 @@ function TopicsScreen() {
     return (
       <GradientBackground>
         <View style={styles.wrapper}>
-          <View style={styles.stickyLogo}>
+          <View style={[styles.stickyLogo, { paddingTop: insets.top }]}>
             <Logo />
           </View>
           <View style={styles.errorContainer}>
@@ -33,7 +35,7 @@ function TopicsScreen() {
   return (
     <GradientBackground>
       <View style={styles.wrapper}>
-        <View style={styles.stickyLogo}>
+        <View style={[styles.stickyLogo, { paddingTop: insets.top }]}>
           <Logo />
         </View>
         <ScrollView

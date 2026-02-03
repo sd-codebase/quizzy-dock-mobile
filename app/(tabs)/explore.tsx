@@ -1,4 +1,5 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GradientBackground } from '@/components/home/gradient-background';
 import { Logo } from '@/components/home/logo';
 import { SubjectsList } from '@/components/home/subjects-list';
@@ -8,6 +9,7 @@ import { useRouter } from 'expo-router';
 
 export default function SubjectsScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const handleSubjectPress = (subject: Subject) => {
     if (subject.shortName) {
@@ -25,7 +27,7 @@ export default function SubjectsScreen() {
   return (
     <GradientBackground>
       <View style={styles.wrapper}>
-        <View style={styles.stickyLogo}>
+        <View style={[styles.stickyLogo, { paddingTop: insets.top }]}>
           <Logo />
         </View>
         <ScrollView
