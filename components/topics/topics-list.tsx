@@ -35,10 +35,15 @@ export function TopicsList({
       setError(null);
       const data = await fetchSubjectByShortname(shortname);
       setSubject(data);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load topics';
-      setError(errorMessage);
-      console.error('Error loading topics:', err);
+    } catch (err: any) {
+      // Handle 404 gracefully - subject not yet available
+      if (err?.status === 404) {
+        setSubject(null);
+      } else {
+        const errorMessage = err?.message || 'Failed to load topics';
+        setError(errorMessage);
+        console.error('Error loading topics:', err);
+      }
     } finally {
       setLoading(false);
     }
@@ -65,7 +70,8 @@ export function TopicsList({
   if (!subject || !subject.topics || subject.topics.length === 0) {
     return (
       <View style={styles.centerContainer}>
-        <Text style={styles.emptyText}>No topics available</Text>
+        <Text style={styles.comingSoonText}>Coming Soon</Text>
+        <Text style={styles.emptyText}>Topics for this subject are being prepared</Text>
       </View>
     );
   }
@@ -116,8 +122,15 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     textAlign: 'center',
   },
+  comingSoonText: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#6366f1',
+    marginBottom: 8,
+  },
   emptyText: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#9ca3af',
+    textAlign: 'center',
   },
 });

@@ -2,6 +2,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { GradientBackground } from '@/components/home/gradient-background';
 import { Logo } from '@/components/home/logo';
 import { SubjectsList } from '@/components/home/subjects-list';
+import { BannerAd } from '@/components/ads/banner-ad';
 import type { Subject } from '@/types/api';
 import { useRouter } from 'expo-router';
 
@@ -36,6 +37,7 @@ export default function SubjectsScreen() {
             <SubjectsList onSubjectPress={handleSubjectPress} />
           </View>
         </ScrollView>
+        <BannerAd />
       </View>
     </GradientBackground>
   );

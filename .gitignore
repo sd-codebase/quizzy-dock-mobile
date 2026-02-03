@@ -41,3 +41,9 @@ app-example
 # generated native folders
 /ios
 /android
+
+# Keystore credentials (keep folder, ignore contents)
+keystore/*
+!keystore/.gitkeep
+!keystore/credentials.example.json
+credentials.json

@@ -1,6 +1,6 @@
 import { View, ScrollView, StyleSheet, ActivityIndicator, Text } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GradientBackground } from '@/components/home/gradient-background';
 import { Logo } from '@/components/home/logo';
@@ -14,6 +14,7 @@ import { SampleAnswerCard } from '@/components/test/interview/sample-answer-card
 import { AdditionalNotesCard } from '@/components/test/interview/additional-notes-card';
 import { InterviewResults } from '@/components/test/interview/interview-results';
 import { fetchInterviewQuestions } from '@/services/quizService';
+import { useInterstitialAd } from '@/hooks/use-interstitial-ad';
 import type { InterviewQuestion } from '@/types/api';
 
 export default function InterviewTestScreen() {
@@ -26,6 +27,10 @@ export default function InterviewTestScreen() {
     subject: string;
   }>();
 
+  // Interstitial ad
+  const { showAd, canShowAd, isLoaded: adLoaded } = useInterstitialAd();
+  const hasShownStartAd = useRef(false);
+
   // State management
   const [questions, setQuestions] = useState<InterviewQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -33,11 +38,43 @@ export default function InterviewTestScreen() {
   const [showResult, setShowResult] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [testStarted, setTestStarted] = useState(false);
 
   // Load questions on mount
   useEffect(() => {
     loadQuestions();
   }, []);
+
+  // Show interstitial ad on test start (wait for ad to load)
+  useEffect(() => {
+    if (loading || questions.length === 0) return;
+    if (testStarted) return;
+    if (hasShownStartAd.current) return;
+
+    if (canShowAd && adLoaded) {
+      hasShownStartAd.current = true;
+      showAd(() => {
+        setTestStarted(true);
+      });
+      return;
+    }
+
+    if (!canShowAd) {
+      hasShownStartAd.current = true;
+      setTestStarted(true);
+      return;
+    }
+
+    // Wait up to 3 seconds for ad to load
+    const timeout = setTimeout(() => {
+      if (!hasShownStartAd.current) {
+        hasShownStartAd.current = true;
+        setTestStarted(true);
+      }
+    }, 3000);
+
+    return () => clearTimeout(timeout);
+  }, [loading, canShowAd, adLoaded, showAd, questions.length, testStarted]);
 
   const loadQuestions = async () => {
     try {
@@ -85,12 +122,14 @@ export default function InterviewTestScreen() {
     router.back();
   };
 
-  if (loading) {
+  if (loading || !testStarted) {
     return (
       <GradientBackground>
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color="#6366f1" />
-          <Text style={styles.loadingText}>Loading Interview Questions...</Text>
+          <Text style={styles.loadingText}>
+            {loading ? 'Loading Interview Questions...' : 'Starting Test...'}
+          </Text>
         </View>
       </GradientBackground>
     );

@@ -17,6 +17,7 @@ import { ResultSummary } from '@/components/test/mcq/result-summary';
 import { ResultActions } from '@/components/test/mcq/result-actions';
 import { MarkdownRenderer } from '@/components/test/mcq/markdown-renderer';
 import { fetchMCQQuestions } from '@/services/quizService';
+import { useInterstitialAd } from '@/hooks/use-interstitial-ad';
 import type { MCQQuestion } from '@/types/api';
 
 const TIME_LIMIT = 15; // 15 seconds per question
@@ -40,6 +41,10 @@ export default function MCQScreen() {
     subject: string;
   }>();
 
+  // Interstitial ad
+  const { showAd, canShowAd, isLoaded: adLoaded, isShowing: adShowing } = useInterstitialAd();
+  const hasShownStartAd = useRef(false);
+
   // State management
   const [questions, setQuestions] = useState<MCQQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -50,6 +55,7 @@ export default function MCQScreen() {
   const [error, setError] = useState<string | null>(null);
   const [screenState, setScreenState] = useState<ScreenState>('testing');
   const [showingLoader, setShowingLoader] = useState(false);
+  const [testStarted, setTestStarted] = useState(false); // Track if test has actually started (after ad)
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const loaderTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -68,9 +74,47 @@ export default function MCQScreen() {
     };
   }, []);
 
-  // Timer effect
+  // Show interstitial ad on test start (wait for ad to load)
   useEffect(() => {
-    if (screenState !== 'testing' || !questions.length || showingLoader) return;
+    // Don't do anything while still loading questions
+    if (loading || questions.length === 0) return;
+
+    // If test already started, don't show ad
+    if (testStarted) return;
+
+    // If we already tried to show ad, don't try again
+    if (hasShownStartAd.current) return;
+
+    // If ad is loaded and can show, show it
+    if (canShowAd && adLoaded) {
+      hasShownStartAd.current = true;
+      showAd(() => {
+        setTestStarted(true);
+      });
+      return;
+    }
+
+    // If cooldown not passed, start test immediately
+    if (!canShowAd) {
+      hasShownStartAd.current = true;
+      setTestStarted(true);
+      return;
+    }
+
+    // Ad not loaded yet but cooldown passed - wait up to 3 seconds for ad to load
+    const timeout = setTimeout(() => {
+      if (!hasShownStartAd.current) {
+        hasShownStartAd.current = true;
+        setTestStarted(true);
+      }
+    }, 3000);
+
+    return () => clearTimeout(timeout);
+  }, [loading, canShowAd, adLoaded, showAd, questions.length, testStarted]);
+
+  // Timer effect - only run after test has started and ad is not showing
+  useEffect(() => {
+    if (screenState !== 'testing' || !questions.length || showingLoader || !testStarted || adShowing) return;
 
     timerIntervalRef.current = setInterval(() => {
       setTimeRemaining((prev) => {
@@ -85,7 +129,7 @@ export default function MCQScreen() {
     return () => {
       if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
     };
-  }, [screenState, questions.length, currentIndex, showingLoader]);
+  }, [screenState, questions.length, currentIndex, showingLoader, testStarted, adShowing]);
 
   const loadQuestions = async () => {
     try {
@@ -166,7 +210,10 @@ export default function MCQScreen() {
     }
   };
 
-  const handleReview = () => {
+  const handleReview = async () => {
+    if (canShowAd) {
+      await showAd();
+    }
     setScreenState('review');
     setCurrentIndex(0);
   };
@@ -183,18 +230,21 @@ export default function MCQScreen() {
       }))
     );
     setTimeRemaining(TIME_LIMIT);
+    setTestStarted(true); // No ad on retake, start immediately
   };
 
   const handleGoToTopics = () => {
     router.back();
   };
 
-  if (loading) {
+  if (loading || (!testStarted && screenState === 'testing')) {
     return (
       <GradientBackground>
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color="#6366f1" />
-          <Text style={styles.loadingText}>Loading MCQ Test...</Text>
+          <Text style={styles.loadingText}>
+            {loading ? 'Loading MCQ Test...' : 'Starting Test...'}
+          </Text>
         </View>
       </GradientBackground>
     );

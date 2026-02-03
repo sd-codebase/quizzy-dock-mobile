@@ -7,6 +7,7 @@ import { HeroSection } from '@/components/home/hero-section';
 import { DescriptionText } from '@/components/home/description-text';
 import { CTAButton } from '@/components/home/cta-button';
 import { FeatureCard } from '@/components/home/feature-card';
+import { BannerAd } from '@/components/ads/banner-ad';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -39,6 +40,7 @@ export default function HomeScreen() {
             </View>
           </View>
         </ScrollView>
+        <BannerAd />
       </View>
     </GradientBackground>
   );

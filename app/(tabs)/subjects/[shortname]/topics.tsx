@@ -3,6 +3,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { GradientBackground } from '@/components/home/gradient-background';
 import { Logo } from '@/components/home/logo';
 import { TopicsList } from '@/components/topics/topics-list';
+import { BannerAd } from '@/components/ads/banner-ad';
 
 function TopicsScreen() {
   const { shortname, subjectStatus, subjectName, subjectQuestions } = useLocalSearchParams<{
@@ -49,6 +50,7 @@ function TopicsScreen() {
             />
           </View>
         </ScrollView>
+        <BannerAd />
       </View>
     </GradientBackground>
   );

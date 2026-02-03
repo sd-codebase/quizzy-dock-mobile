@@ -56,14 +56,6 @@ export function SubjectsList({ onSubjectPress }: SubjectsListProps) {
     setSelectedSubject(null);
   };
 
-  const handleModalContinue = () => {
-    setModalVisible(false);
-    if (selectedSubject) {
-      onSubjectPress?.(selectedSubject);
-    }
-    setSelectedSubject(null);
-  };
-
   const renderSubjectCard = ({ item }: { item: Subject }) => {
     const isActive = item.status === 'active';
 
@@ -118,10 +110,8 @@ export function SubjectsList({ onSubjectPress }: SubjectsListProps) {
         <ComingSoonModal
           visible={modalVisible}
           onClose={handleModalClose}
-          onContinue={handleModalContinue}
           questionCount={selectedSubject.questions || 0}
           subjectName={selectedSubject.name}
-          showContinueButton={true}
         />
       )}
     </>
