@@ -42,6 +42,11 @@ app-example
 /ios
 /android
 
+# iOS Keychain
+ios-keychain/
+*.keychain
+*.keychain-db
+
 # Keystore credentials (keep folder, ignore contents)
 keystore/*
 !keystore/.gitkeep
