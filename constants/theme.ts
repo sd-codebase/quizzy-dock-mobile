@@ -34,6 +34,8 @@ export const TabBarColors = {
   labelColor: '#ffffff',
 };
 
+export const SUBJECT_THUMBNAIL_BASE_URL = 'https://www.quizzydock.com/subject-thumbnails';
+
 export const GradientColors = {
   primary: ['#6366f1', '#a855f7'],
   secondary: ['#a855f7', '#ec4899'],

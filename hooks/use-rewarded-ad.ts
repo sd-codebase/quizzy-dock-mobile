@@ -1,7 +1,8 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { Platform } from 'react-native';
 import {
-  InterstitialAd,
+  RewardedAd,
+  RewardedAdEventType,
   AdEventType,
 } from 'react-native-google-mobile-ads';
 import { AD_CONFIG } from '@/constants/ads';
@@ -9,13 +10,15 @@ import { AD_CONFIG } from '@/constants/ads';
 // Global state to track cooldown across all hook instances
 let lastShownTime = 0;
 
-export function useInterstitialAd() {
+export function useRewardedAd() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isShowing, setIsShowing] = useState(false);
-  const adRef = useRef<InterstitialAd | null>(null);
+  const adRef = useRef<RewardedAd | null>(null);
   const unsubscribeLoadedRef = useRef<(() => void) | null>(null);
+  const unsubscribeEarnedRef = useRef<(() => void) | null>(null);
   const unsubscribeClosedRef = useRef<(() => void) | null>(null);
-  const onCloseCallbackRef = useRef<(() => void) | null>(null);
+  const onCloseCallbackRef = useRef<((rewarded: boolean) => void) | null>(null);
+  const earnedRewardRef = useRef(false);
 
   const canShowAd = useCallback(() => {
     if (Platform.OS === 'web') return false;
@@ -25,34 +28,42 @@ export function useInterstitialAd() {
   const loadAd = useCallback(() => {
     if (Platform.OS === 'web') return;
 
-    // Clean up previous ad if exists
+    // Clean up previous listeners
     if (unsubscribeLoadedRef.current) {
       unsubscribeLoadedRef.current();
+    }
+    if (unsubscribeEarnedRef.current) {
+      unsubscribeEarnedRef.current();
     }
     if (unsubscribeClosedRef.current) {
       unsubscribeClosedRef.current();
     }
 
-    const interstitial = InterstitialAd.createForAdRequest(AD_CONFIG.INTERSTITIAL_ID);
-    adRef.current = interstitial;
+    const rewarded = RewardedAd.createForAdRequest(AD_CONFIG.REWARDED_ID);
+    adRef.current = rewarded;
 
-    unsubscribeLoadedRef.current = interstitial.addAdEventListener(AdEventType.LOADED, () => {
+    unsubscribeLoadedRef.current = rewarded.addAdEventListener(RewardedAdEventType.LOADED, () => {
       setIsLoaded(true);
     });
 
-    unsubscribeClosedRef.current = interstitial.addAdEventListener(AdEventType.CLOSED, () => {
+    unsubscribeEarnedRef.current = rewarded.addAdEventListener(RewardedAdEventType.EARNED_REWARD, () => {
+      earnedRewardRef.current = true;
+    });
+
+    unsubscribeClosedRef.current = rewarded.addAdEventListener(AdEventType.CLOSED, () => {
       setIsShowing(false);
       setIsLoaded(false);
-      // Call the onClose callback if set
+      // Call the onClose callback with whether reward was earned
       if (onCloseCallbackRef.current) {
-        onCloseCallbackRef.current();
+        onCloseCallbackRef.current(earnedRewardRef.current);
         onCloseCallbackRef.current = null;
       }
+      earnedRewardRef.current = false;
       // Preload next ad
       loadAd();
     });
 
-    interstitial.load();
+    rewarded.load();
   }, []);
 
   useEffect(() => {
@@ -62,37 +73,39 @@ export function useInterstitialAd() {
       if (unsubscribeLoadedRef.current) {
         unsubscribeLoadedRef.current();
       }
+      if (unsubscribeEarnedRef.current) {
+        unsubscribeEarnedRef.current();
+      }
       if (unsubscribeClosedRef.current) {
         unsubscribeClosedRef.current();
       }
     };
   }, [loadAd]);
 
-  const showAd = useCallback(async (onClose?: () => void): Promise<boolean> => {
+  const showAd = useCallback((onClose?: (rewarded: boolean) => void) => {
     if (Platform.OS === 'web') {
-      onClose?.();
-      return false;
+      onClose?.(true);
+      return;
     }
     if (!isLoaded || isShowing) {
-      onClose?.();
-      return false;
+      onClose?.(true);
+      return;
     }
     if (!canShowAd()) {
-      onClose?.();
-      return false;
+      onClose?.(true);
+      return;
     }
 
     try {
       setIsShowing(true);
       lastShownTime = Date.now();
+      earnedRewardRef.current = false;
       onCloseCallbackRef.current = onClose || null;
-      await adRef.current?.show();
-      return true;
+      adRef.current?.show();
     } catch (error) {
-      console.log('Failed to show interstitial ad:', error);
+      console.log('Failed to show rewarded ad:', error);
       setIsShowing(false);
-      onClose?.();
-      return false;
+      onClose?.(true);
     }
   }, [isLoaded, isShowing, canShowAd]);
 

@@ -27,6 +27,24 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
           paddingHorizontal: 0,
           paddingVertical: 0,
         },
+        heading1: {
+          fontSize: 18,
+          fontWeight: 'bold',
+          marginTop: 8,
+          marginBottom: 4,
+        },
+        heading2: {
+          fontSize: 16,
+          fontWeight: 'bold',
+          marginTop: 8,
+          marginBottom: 4,
+        },
+        heading3: {
+          fontSize: 15,
+          fontWeight: 'bold',
+          marginTop: 8,
+          marginBottom: 4,
+        },
       }}
     >
       {content}

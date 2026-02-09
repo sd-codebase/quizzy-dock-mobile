@@ -14,9 +14,8 @@ import { NextButton } from '@/components/test/mcq/next-button';
 import { ExpectedOutputCard } from '@/components/test/output/expected-output-card';
 import { ExplanationCard } from '@/components/test/output/explanation-card';
 import { OutputResults } from '@/components/test/output/output-results';
-import { BannerAd } from '@/components/ads/banner-ad';
 import { fetchOutputQuestions } from '@/services/quizService';
-import { useInterstitialAd } from '@/hooks/use-interstitial-ad';
+import { useRewardedAd } from '@/hooks/use-rewarded-ad';
 import type { OutputQuestion } from '@/types/api';
 
 export default function OutputTestScreen() {
@@ -29,9 +28,10 @@ export default function OutputTestScreen() {
     subject: string;
   }>();
 
-  // Interstitial ad
-  const { showAd, canShowAd, isLoaded: adLoaded } = useInterstitialAd();
+  // Rewarded ad
+  const { showAd, canShowAd, isLoaded: adLoaded } = useRewardedAd();
   const hasShownStartAd = useRef(false);
+  const [adSkipMessage, setAdSkipMessage] = useState<string | null>(null);
 
   // State management
   const [questions, setQuestions] = useState<OutputQuestion[]>([]);
@@ -55,8 +55,13 @@ export default function OutputTestScreen() {
 
     if (canShowAd && adLoaded) {
       hasShownStartAd.current = true;
-      showAd(() => {
-        setTestStarted(true);
+      showAd((rewarded) => {
+        if (rewarded) {
+          setTestStarted(true);
+        } else {
+          setAdSkipMessage('Please watch the full ad to start the test');
+          setTimeout(() => router.back(), 2000);
+        }
       });
       return;
     }
@@ -130,7 +135,7 @@ export default function OutputTestScreen() {
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color="#6366f1" />
           <Text style={styles.loadingText}>
-            {loading ? 'Loading Output Test...' : 'Starting Test...'}
+            {adSkipMessage ? adSkipMessage : loading ? 'Loading Output Test...' : 'Starting Test...'}
           </Text>
         </View>
       </GradientBackground>
@@ -202,9 +207,6 @@ export default function OutputTestScreen() {
             )}
           </View>
         </ScrollView>
-
-        {/* Banner Ad */}
-        <BannerAd />
 
         {/* Fixed Buttons */}
         <View style={[styles.buttonContainer, { paddingBottom: 16 + insets.bottom }]}>

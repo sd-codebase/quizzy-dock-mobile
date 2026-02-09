@@ -2,7 +2,6 @@ import { View, ScrollView, StyleSheet, Text, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Logo } from '@/components/home/logo';
-import { BannerAd } from '@/components/ads/banner-ad';
 
 interface InterviewResultsProps {
   total: number;
@@ -80,7 +79,6 @@ export function InterviewResults({
           </View>
         </View>
       </ScrollView>
-      <BannerAd />
     </View>
   );
 }

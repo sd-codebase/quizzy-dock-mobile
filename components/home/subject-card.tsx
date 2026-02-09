@@ -4,6 +4,7 @@ import { SubjectIcon } from './subject-icon';
 
 interface SubjectCardProps {
   name: string;
+  shortName?: string;
   questions: string | number;
   onPress: () => void;
   isActive?: boolean;
@@ -14,7 +15,7 @@ interface SubjectCardProps {
  * Displays a single subject with icon and question count
  * Memoized to prevent unnecessary re-renders
  */
-const SubjectCardComponent = ({ name, questions, onPress, isActive = true }: SubjectCardProps) => {
+const SubjectCardComponent = ({ name, shortName, questions, onPress, isActive = true }: SubjectCardProps) => {
   const questionCount = typeof questions === 'string' ? questions : questions.toString();
 
   return (
@@ -27,7 +28,7 @@ const SubjectCardComponent = ({ name, questions, onPress, isActive = true }: Sub
       ]}
     >
       <View style={styles.content}>
-        <SubjectIcon name={name} size={70} />
+        <SubjectIcon name={name} shortName={shortName} size={70} />
         <View style={styles.textContainer}>
           <Text style={styles.name}>{name}</Text>
           <Text style={styles.questionCount}>

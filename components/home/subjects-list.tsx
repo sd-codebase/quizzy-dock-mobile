@@ -62,6 +62,7 @@ export function SubjectsList({ onSubjectPress }: SubjectsListProps) {
     return (
       <SubjectCard
         name={item.name}
+        shortName={item.shortName}
         questions={item.questions}
         isActive={isActive}
         onPress={() => handleSubjectCardPress(item)}

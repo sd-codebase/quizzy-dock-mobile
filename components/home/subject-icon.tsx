@@ -1,16 +1,37 @@
+import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
+import { SUBJECT_THUMBNAIL_BASE_URL } from '@/constants/theme';
 
 interface SubjectIconProps {
   name: string;
+  shortName?: string;
   size?: number;
 }
 
 /**
  * SubjectIcon Component
- * Displays the first letter of the subject name in a gradient background
+ * Displays an SVG thumbnail for the subject, falling back to the first letter
+ * on a gradient background if the SVG fails to load.
  */
-export function SubjectIcon({ name, size = 60 }: SubjectIconProps) {
+export function SubjectIcon({ name, shortName, size = 60 }: SubjectIconProps) {
+  const [imageError, setImageError] = useState(false);
+
+  const showFallback = !shortName || imageError;
+
+  if (!showFallback) {
+    return (
+      <Image
+        source={{ uri: `${SUBJECT_THUMBNAIL_BASE_URL}/${shortName}.svg` }}
+        style={{ width: size, height: size, borderRadius: size / 2 }}
+        contentFit="cover"
+        cachePolicy="none"
+        onError={() => setImageError(true)}
+      />
+    );
+  }
+
   const firstLetter = name.charAt(0).toUpperCase();
 
   // Map subject names to gradient colors

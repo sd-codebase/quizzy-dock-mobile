@@ -16,12 +16,11 @@ import { ScoreDisplay } from '@/components/test/mcq/score-display';
 import { ResultSummary } from '@/components/test/mcq/result-summary';
 import { ResultActions } from '@/components/test/mcq/result-actions';
 import { MarkdownRenderer } from '@/components/test/mcq/markdown-renderer';
-import { BannerAd } from '@/components/ads/banner-ad';
 import { fetchMCQQuestions } from '@/services/quizService';
-import { useInterstitialAd } from '@/hooks/use-interstitial-ad';
+import { useRewardedAd } from '@/hooks/use-rewarded-ad';
 import type { MCQQuestion } from '@/types/api';
 
-const TIME_LIMIT = 15; // 15 seconds per question
+const TIME_LIMIT = 30; // 30 seconds per question
 const LOADER_DELAY = 1000; // 1 second loader between questions
 
 interface UserAnswer {
@@ -42,9 +41,10 @@ export default function MCQScreen() {
     subject: string;
   }>();
 
-  // Interstitial ad
-  const { showAd, canShowAd, isLoaded: adLoaded, isShowing: adShowing } = useInterstitialAd();
+  // Rewarded ad
+  const { showAd, canShowAd, isLoaded: adLoaded, isShowing: adShowing } = useRewardedAd();
   const hasShownStartAd = useRef(false);
+  const [adSkipMessage, setAdSkipMessage] = useState<string | null>(null);
 
   // State management
   const [questions, setQuestions] = useState<MCQQuestion[]>([]);
@@ -89,8 +89,13 @@ export default function MCQScreen() {
     // If ad is loaded and can show, show it
     if (canShowAd && adLoaded) {
       hasShownStartAd.current = true;
-      showAd(() => {
-        setTestStarted(true);
+      showAd((rewarded) => {
+        if (rewarded) {
+          setTestStarted(true);
+        } else {
+          setAdSkipMessage('Please watch the full ad to start the test');
+          setTimeout(() => router.back(), 2000);
+        }
       });
       return;
     }
@@ -211,10 +216,7 @@ export default function MCQScreen() {
     }
   };
 
-  const handleReview = async () => {
-    if (canShowAd) {
-      await showAd();
-    }
+  const handleReview = () => {
     setScreenState('review');
     setCurrentIndex(0);
   };
@@ -244,7 +246,7 @@ export default function MCQScreen() {
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color="#6366f1" />
           <Text style={styles.loadingText}>
-            {loading ? 'Loading MCQ Test...' : 'Starting Test...'}
+            {adSkipMessage ? adSkipMessage : loading ? 'Loading MCQ Test...' : 'Starting Test...'}
           </Text>
         </View>
       </GradientBackground>
@@ -291,7 +293,7 @@ export default function MCQScreen() {
               />
             </View>
           </ScrollView>
-          <BannerAd />
+
         </View>
       </GradientBackground>
     );
@@ -346,8 +348,7 @@ export default function MCQScreen() {
             </View>
           </ScrollView>
 
-          {/* Banner Ad */}
-          <BannerAd />
+
 
           {/* Fixed Navigation Buttons */}
           <View style={[styles.buttonContainer, { paddingBottom: 16 + insets.bottom }]}>
@@ -433,8 +434,6 @@ export default function MCQScreen() {
           </View>
         </ScrollView>
 
-        {/* Banner Ad */}
-        <BannerAd />
 
         {/* Fixed Buttons */}
         <View style={[styles.buttonContainer, { paddingBottom: 16 + insets.bottom }]}>

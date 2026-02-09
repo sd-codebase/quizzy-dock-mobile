@@ -13,9 +13,8 @@ import { NextButton } from '@/components/test/mcq/next-button';
 import { SampleAnswerCard } from '@/components/test/interview/sample-answer-card';
 import { AdditionalNotesCard } from '@/components/test/interview/additional-notes-card';
 import { InterviewResults } from '@/components/test/interview/interview-results';
-import { BannerAd } from '@/components/ads/banner-ad';
 import { fetchInterviewQuestions } from '@/services/quizService';
-import { useInterstitialAd } from '@/hooks/use-interstitial-ad';
+import { useRewardedAd } from '@/hooks/use-rewarded-ad';
 import type { InterviewQuestion } from '@/types/api';
 
 export default function InterviewTestScreen() {
@@ -28,9 +27,10 @@ export default function InterviewTestScreen() {
     subject: string;
   }>();
 
-  // Interstitial ad
-  const { showAd, canShowAd, isLoaded: adLoaded } = useInterstitialAd();
+  // Rewarded ad
+  const { showAd, canShowAd, isLoaded: adLoaded } = useRewardedAd();
   const hasShownStartAd = useRef(false);
+  const [adSkipMessage, setAdSkipMessage] = useState<string | null>(null);
 
   // State management
   const [questions, setQuestions] = useState<InterviewQuestion[]>([]);
@@ -54,8 +54,13 @@ export default function InterviewTestScreen() {
 
     if (canShowAd && adLoaded) {
       hasShownStartAd.current = true;
-      showAd(() => {
-        setTestStarted(true);
+      showAd((rewarded) => {
+        if (rewarded) {
+          setTestStarted(true);
+        } else {
+          setAdSkipMessage('Please watch the full ad to start the test');
+          setTimeout(() => router.back(), 2000);
+        }
       });
       return;
     }
@@ -129,7 +134,7 @@ export default function InterviewTestScreen() {
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color="#6366f1" />
           <Text style={styles.loadingText}>
-            {loading ? 'Loading Interview Questions...' : 'Starting Test...'}
+            {adSkipMessage ? adSkipMessage : loading ? 'Loading Interview Questions...' : 'Starting Test...'}
           </Text>
         </View>
       </GradientBackground>
@@ -201,9 +206,6 @@ export default function InterviewTestScreen() {
             )}
           </View>
         </ScrollView>
-
-        {/* Banner Ad */}
-        <BannerAd />
 
         {/* Fixed Buttons */}
         <View style={[styles.buttonContainer, { paddingBottom: 16 + insets.bottom }]}>

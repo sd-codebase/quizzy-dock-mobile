@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Animated, StyleSheet, View } from "react-native";
+import { Animated, Easing, StyleSheet, View } from "react-native";
 
 interface ProgressBarProps {
   current: number;
@@ -10,8 +10,8 @@ interface ProgressBarProps {
 
 /**
  * ProgressBar Component
- * Displays a color-changing progress bar based on time remaining
- * Colors: Green (>40s) → Yellow (30-40s) → Orange (15-30s) → Red (<15s)
+ * Displays a smooth, continuously filling progress bar based on time remaining
+ * Colors: Green → Yellow → Red as time runs out
  */
 export function ProgressBar({
   current,
@@ -20,30 +20,34 @@ export function ProgressBar({
   timeLimit,
 }: ProgressBarProps) {
   const widthAnim = useRef(new Animated.Value(0)).current;
-  const colorAnim = useRef(new Animated.Value(0)).current;
 
   // Progress is based on elapsed time (left to right)
-  const elapsedTime = timeLimit + 1 - timeRemaining;
+  const elapsedTime = timeLimit - timeRemaining;
   const timeProgress = (elapsedTime / timeLimit) * 100;
 
   useEffect(() => {
+    // Animate smoothly over 1 second (the interval between ticks)
     Animated.timing(widthAnim, {
       toValue: timeProgress,
-      duration: 100,
+      duration: 1000,
+      easing: Easing.linear,
       useNativeDriver: false,
     }).start();
   }, [timeProgress, widthAnim]);
 
+  // Reset animation instantly when question changes
+  useEffect(() => {
+    widthAnim.setValue(0);
+  }, [current]);
+
   const getBarColor = () => {
-    // Change colors at specific time points: after 2 seconds (13s left) and 4 seconds (11s left)
-    if (timeRemaining > 4) {
-      return "#10b981"; // Green (14-15 seconds)
-    } else if (timeRemaining > 2) {
-      return "#fbbf24"; // Yellow (12-13 seconds)
-    } else if (timeRemaining > 0) {
-      return "#db1504ff"; // Orange (1-2 seconds)
+    const elapsed = 1 - (timeRemaining / timeLimit);
+    if (elapsed < 0.75) {
+      return "#10b981"; // Green (0–75% elapsed)
+    } else if (elapsed < 0.90) {
+      return "#fbbf24"; // Yellow (75–90% elapsed)
     } else {
-      return "#db1504ff"; // Red (0 seconds)
+      return "#db1504ff"; // Red (90–100% elapsed)
     }
   };
 
