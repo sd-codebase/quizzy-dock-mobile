@@ -53,10 +53,12 @@
         "react-native-google-mobile-ads",
         {
           "androidAppId": "ca-app-pub-6093200167963107~4486595091",
-          "iosAppId": "ca-app-pub-6093200167963107~4717695237"
+          "iosAppId": "ca-app-pub-6093200167963107~4717695237",
+          "userTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you."
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-tracking-transparency"
     ],
     "experiments": {
       "typedRoutes": true

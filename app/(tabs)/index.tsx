@@ -35,8 +35,8 @@ export default function HomeScreen() {
             <CTAButton onPress={handleCTAPress} />
 
             <View style={styles.featureContainer}>
-              <FeatureCard title="3 Test Formats" icon="assignment.fill" />
-              <FeatureCard title="Output Questions" icon="code.brackets.fill" />
+              <FeatureCard title="3 Test Formats" icon="doc.text.fill" />
+              <FeatureCard title="Output Questions" icon="terminal.fill" />
               <FeatureCard title="Interview Prep" icon="lightbulb.fill" />
             </View>
           </View>
