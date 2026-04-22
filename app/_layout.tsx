@@ -16,6 +16,7 @@ export default function RootLayout() {
   useEffect(() => {
     const initAds = async () => {
       if (Platform.OS === 'ios') {
+        await new Promise(resolve => setTimeout(resolve, 1000));
         await requestTrackingPermissionsAsync();
       }
       try {
