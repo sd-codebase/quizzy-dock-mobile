@@ -2,7 +2,7 @@
   "expo": {
     "name": "QuizzyDock",
     "slug": "quizzy-dock-mobile",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "quizzydockmobile",
@@ -10,7 +10,11 @@
     "newArchEnabled": false,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.krishna.jsleet.quizzydock"
+      "bundleIdentifier": "com.krishna.jsleet.quizzydock",
+      "buildNumber": "4",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {

@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import { useEffect } from 'react';
 import mobileAds, { AdsConsent, AdsConsentDebugGeography } from 'react-native-google-mobile-ads';
-import { requestTrackingPermissionsAsync } from 'expo-tracking-transparency';
+import { requestTrackingPermissionsAsync, getTrackingPermissionsAsync } from 'expo-tracking-transparency';
 import { Platform } from 'react-native';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -16,8 +16,11 @@ export default function RootLayout() {
   useEffect(() => {
     const initAds = async () => {
       if (Platform.OS === 'ios') {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        await requestTrackingPermissionsAsync();
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        const { status } = await getTrackingPermissionsAsync();
+        if (status === 'undetermined') {
+          await requestTrackingPermissionsAsync();
+        }
       }
       try {
         await AdsConsent.requestInfoUpdate(__DEV__ ? {
