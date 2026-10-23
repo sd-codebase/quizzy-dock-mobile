@@ -35,6 +35,7 @@ npm run build:aab:local
 | `npm run prebuild` | Generate native Android/iOS folders |
 | `npm run build:apk:local` | Build APK locally using EAS |
 | `npm run build:aab:local` | Build AAB locally using EAS |
+| `npm run build:android:release` | Build signed release AAB with Gradle (no EAS) |
 
 ## Keystore Setup
 
@@ -111,7 +112,19 @@ npm run build:apk:local
 
 Output: `build-*.apk` in project root
 
-### Local AAB Build (for Play Store)
+### Local Release AAB (Gradle, no EAS)
+
+```bash
+npm run build:android:release
+```
+
+Regenerates `android/` and runs `./gradlew bundleRelease`. The `plugins/withReleaseSigning.js` config plugin signs it with the keystore from `credentials.json`.
+
+Output: `android/app/build/outputs/bundle/release/app-release.aab`
+
+Bump `expo.version` and `expo.android.versionCode` in `app.json` before each Play release; Play rejects a version code it has already seen.
+
+### Local AAB Build via EAS (for Play Store)
 
 ```bash
 npm run build:aab:local

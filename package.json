@@ -12,7 +12,8 @@
     "lint": "expo lint",
     "prebuild": "expo prebuild --clean",
     "build:apk:local": "eas build --platform android --profile local-apk --local",
-    "build:aab:local": "eas build --platform android --profile local-aab --local"
+    "build:aab:local": "eas build --platform android --profile local-aab --local",
+    "build:android:release": "expo prebuild --platform android --clean --no-install && cd android && ./gradlew bundleRelease"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.0",
